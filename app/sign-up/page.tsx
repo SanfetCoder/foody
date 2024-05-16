@@ -1,52 +1,74 @@
-"use client"
-import { useState } from 'react';
-import toast from 'react-hot-toast';
+"use client";
+import { signUp } from "@/libs/auth";
+import { createRestaurant } from "@/libs/restaurants.service";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function SignUp() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [restaurantName, setRestaurantName] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [restaurantName, setRestaurantName] = useState("");
   const [profileImage, setProfileImage] = useState(null);
+  const [restaurantAddress, setRestaurantAddress] = useState("");
 
-  const handleSubmit = (e : any) => {
-    e.preventDefault();
+  const handleSubmit = async (e: any) => {
+    try {
+      e.preventDefault();
 
-    if (!email.trim()) {
-      toast.error('Email is required');
-      return;
+      if (!email.trim()) {
+        toast.error("Email is required");
+        return;
+      }
+
+      if (!password.trim()) {
+        toast.error("Password is required");
+        return;
+      }
+
+      if (!confirmPassword.trim()) {
+        toast.error("Confirm password is required");
+        return;
+      }
+
+      if (!restaurantName.trim()) {
+        toast.error("Restaurant name is required");
+        return;
+      }
+
+      if (!profileImage) {
+        toast.error("Profile image is required");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
+      }
+
+      if (!restaurantAddress.trim()) {
+        toast.error("Restaurant address is required");
+        return;
+      }
+
+      const {user} = await signUp(email, password);
+
+      if (!user) throw new Error("No user found")
+      
+      await createRestaurant({
+        id : user.id,
+        name: restaurantName,
+        address: restaurantAddress,
+        email,
+      });
+
+      toast.success("Sign up successfully");
+    } catch (error: any) {
+      toast.error(error.message)
     }
-
-    if (!password.trim()) {
-      toast.error('Password is required');
-      return;
-    }
-
-    if (!confirmPassword.trim()) {
-      toast.error('Confirm password is required');
-      return;
-    }
-
-    if (!restaurantName.trim()) {
-      toast.error('Restaurant name is required');
-      return;
-    }
-
-    if (!profileImage) {
-      toast.error('Profile image is required');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
-
-    toast.success("Sign up successfully")
-
   };
 
-  const handleImageUpload = (e : any) => {
+  const handleImageUpload = (e: any) => {
     setProfileImage(e.target.files[0]);
   };
 
@@ -57,15 +79,35 @@ export default function SignUp() {
           <label htmlFor="profile-image" className="cursor-pointer">
             <div className="w-24 h-24 rounded-full bg-gray-200 flex justify-center items-center">
               {profileImage ? (
-                <img src={URL.createObjectURL(profileImage)} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                <img
+                  src={URL.createObjectURL(profileImage)}
+                  alt="Profile"
+                  className="w-full h-full rounded-full object-cover"
+                />
               ) : (
-                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                <svg
+                  className="w-12 h-12 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
                 </svg>
               )}
             </div>
           </label>
-          <input type="file" id="profile-image" className="hidden" onChange={handleImageUpload} />
+          <input
+            type="file"
+            id="profile-image"
+            className="hidden"
+            onChange={handleImageUpload}
+          />
         </div>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -95,7 +137,10 @@ export default function SignUp() {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="confirm-password" className="block font-medium mb-2">
+            <label
+              htmlFor="confirm-password"
+              className="block font-medium mb-2"
+            >
               Confirm Password
             </label>
             <input
@@ -117,6 +162,22 @@ export default function SignUp() {
               placeholder="Enter your restaurant name"
               value={restaurantName}
               onChange={(e) => setRestaurantName(e.target.value)}
+              className="border rounded-md px-4 py-2 w-full"
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="restaurant-address"
+              className="block font-medium mb-2"
+            >
+              Restaurant Address
+            </label>
+            <input
+              type="text"
+              id="restaurant-address"
+              placeholder="Enter your restaurant address"
+              value={restaurantAddress}
+              onChange={(e) => setRestaurantAddress(e.target.value)}
               className="border rounded-md px-4 py-2 w-full"
             />
           </div>
