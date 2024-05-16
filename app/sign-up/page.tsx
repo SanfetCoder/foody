@@ -2,6 +2,7 @@
 import { signUp } from "@/libs/auth.service";
 import { createRestaurant } from "@/libs/restaurants.service";
 import { uploadImage } from "@/libs/storage.service";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -12,6 +13,7 @@ export default function SignUp() {
   const [restaurantName, setRestaurantName] = useState("");
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [restaurantAddress, setRestaurantAddress] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: any) => {
     try {
@@ -66,6 +68,10 @@ export default function SignUp() {
       await uploadImage("restaurants",  `${user.id}/image.png`, profileImage)
 
       toast.success("Sign up successfully");
+
+      setTimeout(()=>{
+        router.push("/restaurant")
+      }, 1500)
     } catch (error: any) {
       toast.error(error.message)
     }

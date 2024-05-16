@@ -1,25 +1,32 @@
-"use client"
-import { useState } from 'react';
-import toast from 'react-hot-toast';
+"use client";
+import { signIn } from "@/libs/auth.service";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function SignIn() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = (e : any) => {
-    e.preventDefault();
+  const handleSubmit = async (e: any) => {
+    try {
+      e.preventDefault();
 
-    if (!email.trim()) {
-      toast.error('Email is required');
-      return;
+      if (!email.trim()) {
+        toast.error("Email is required");
+        return;
+      }
+
+      if (!password.trim()) {
+        toast.error("Password is required");
+        return;
+      }
+
+      await signIn(email, password)
+
+      toast.success("Login successfully!");
+    } catch (error: any) {
+      toast.error(error.message);
     }
-
-    if (!password.trim()) {
-      toast.error('Password is required');
-      return;
-    }
-
-    toast.success("Login successfully!")
   };
 
   return (
