@@ -42,7 +42,7 @@ export default function SignUp() {
       return;
     }
 
-    
+    toast.success("Sign up successfully")
 
   };
 
