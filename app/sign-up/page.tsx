@@ -1,6 +1,7 @@
 "use client";
-import { signUp } from "@/libs/auth";
+import { signUp } from "@/libs/auth.service";
 import { createRestaurant } from "@/libs/restaurants.service";
+import { uploadImage } from "@/libs/storage.service";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -9,7 +10,7 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [restaurantName, setRestaurantName] = useState("");
-  const [profileImage, setProfileImage] = useState(null);
+  const [profileImage, setProfileImage] = useState<File | null>(null);
   const [restaurantAddress, setRestaurantAddress] = useState("");
 
   const handleSubmit = async (e: any) => {
@@ -54,13 +55,15 @@ export default function SignUp() {
       const {user} = await signUp(email, password);
 
       if (!user) throw new Error("No user found")
-      
+
       await createRestaurant({
         id : user.id,
         name: restaurantName,
         address: restaurantAddress,
         email,
       });
+
+      await uploadImage("restaurants",  `${user.id}/image.png`, profileImage)
 
       toast.success("Sign up successfully");
     } catch (error: any) {
