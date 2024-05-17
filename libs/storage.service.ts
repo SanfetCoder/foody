@@ -1,6 +1,10 @@
 import { supabase } from "@/configs/supabaseClient.config";
 
-export async function uploadImage(bucketName : string, path: string, imageFile: File) {
+export async function uploadImage(
+  bucketName: string,
+  path: string,
+  imageFile: File
+) {
   try {
     const { error } = await supabase.storage
       .from(bucketName)
@@ -11,4 +15,9 @@ export async function uploadImage(bucketName : string, path: string, imageFile: 
   } catch (error: any) {
     throw new Error(error.message);
   }
+}
+
+export function getPublicUrl(bucketName: string, path: string) {
+  const { data } = supabase.storage.from(bucketName).getPublicUrl(path);
+  return data.publicUrl;
 }

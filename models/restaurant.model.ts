@@ -3,5 +3,4 @@ export type Restaurant = {
   name : string,
   address : string,
   email : string
-  
 }

@@ -1,4 +1,19 @@
 import { supabase } from "@/configs/supabaseClient.config";
+import { Restaurant } from "@/models/restaurant.model";
+import { User } from "@supabase/supabase-js";
+
+export async function getCurrentUser(): Promise<User | null> {
+  try {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+    if (error) throw new Error(error.message);
+    return user;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
 
 export async function signUp(email: string, password: string) {
   try {

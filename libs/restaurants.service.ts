@@ -12,3 +12,19 @@ export async function createRestaurant(restaurantInfo: any) {
     throw new Error(error.message);
   }
 }
+
+export async function getRestaurant(id: string): Promise<Restaurant> {
+  try {
+    const { data, error } = await supabase
+      .from("restaurants")
+      .select()
+      .eq("id", id)
+      .single();
+
+    if (error) throw new Error(error.message);
+
+    return data;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
