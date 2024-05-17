@@ -28,3 +28,22 @@ export async function getRestaurant(id: string): Promise<Restaurant> {
     throw new Error(error.message);
   }
 }
+
+export async function updateRestaurantInfo(
+  id: string,
+  name: string,
+  address: string
+): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('restaurants')
+      .update({ name, address })
+      .eq('id', id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}

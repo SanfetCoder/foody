@@ -9,21 +9,31 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useUserInfo } from "@/hooks/useUserInfo";
+import toast from "react-hot-toast";
+import { updateRestaurantInfo } from "@/libs/restaurants.service";
 
 const EditUserPage = () => {
   const { userInfo, isLoading } = useUserInfo();
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
 
   React.useEffect(() => {
     if (userInfo) {
       setName(userInfo.name);
-      setEmail(userInfo.email);
+      setAddress(userInfo.address);
     }
   }, [userInfo]);
 
-  const handleUpdate = () => {
-    console.log("Updating user information:", { name, email });
+  const handleUpdate = async () => {
+    try {
+      if (!userInfo?.id) return
+
+      await updateRestaurantInfo(userInfo?.id, name, address);
+
+      toast.success("Updated successfully");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   };
 
   if (isLoading) return <CircularProgress />;
@@ -32,8 +42,8 @@ const EditUserPage = () => {
     <div className="flex justify-center items-center h-screen">
       <Card>
         <CardContent>
-          <Typography variant="h5" component="div">
-            Edit User Information
+          <Typography className="text-center" variant="h5" component="div">
+            Edit your restaurant
           </Typography>
           <TextField
             label="Name"
@@ -43,9 +53,9 @@ const EditUserPage = () => {
             margin="normal"
           />
           <TextField
-            label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            label="Address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
             fullWidth
             margin="normal"
           />
