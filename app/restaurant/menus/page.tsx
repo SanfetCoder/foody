@@ -1,30 +1,47 @@
-"use client"
+"use client";
 import React from "react";
 import { Button, Card, CardContent, Typography, Grid } from "@mui/material";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { deleteMenu, fetchMenus } from "@/libs/menus.service";
+import {
+  deleteMenu,
+  fetchMenuCategories,
+  fetchMenus,
+} from "@/libs/menus.service";
 import { useUserInfo } from "@/hooks/useUserInfo";
 import { redirect, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 const MenusPage = () => {
-  const {userInfo, isLoading : isLoadingUser} = useUserInfo();
+  const { userInfo, isLoading: isLoadingUser } = useUserInfo();
   const router = useRouter();
-  const {data : menus, isPending : isLoadingMenus} = useQuery({
-    queryKey : ["menus", userInfo],
-    queryFn : async () => {
-      if (!userInfo) return
+  const { data: menus, isPending: isLoadingMenus } = useQuery({
+    queryKey: ["menus", userInfo],
+    queryFn: async () => {
+      if (!userInfo) return;
       const response = await fetchMenus(userInfo.id);
-      return response
+      return response;
     },
-    enabled : !!userInfo
-  })
+    enabled: !!userInfo,
+  });
+  const [selectedCategory, setSelectedCategory] = React.useState<string>("");
+  const filteredMenus = menus?.filter((menu) => (menu.category === selectedCategory) || (!selectedCategory));
 
-  if (isLoadingMenus || isLoadingUser) return <h1>loading...</h1>
-  if (!userInfo) redirect("/restaurant")
+  const { data: menuCategories, isPending: isLoadingCategories } = useQuery({
+    queryKey: ["menuCategories", userInfo],
+    queryFn: async () => {
+      if (!userInfo) return;
+      const response = await fetchMenuCategories(userInfo.id);
+      return response;
+    },
+    enabled: !!userInfo,
+  });
 
-  async function handleDeleteMenu(menuId : string){
+  if (isLoadingMenus || isLoadingUser || isLoadingCategories) return <h1>loading...</h1>;
+
+  if (!userInfo) redirect("/restaurant");
+
+  async function handleDeleteMenu(menuId: string) {
     try {
       await deleteMenu(menuId);
 
@@ -33,8 +50,9 @@ const MenusPage = () => {
       setTimeout(() => {
         window.location.reload();
       }, 1000);
-    } catch (error : any) {
-      toast.error(error.message)
+
+    } catch (error: any) {
+      toast.error(error.message);
     }
   }
 
@@ -49,18 +67,24 @@ const MenusPage = () => {
         Food Categories
       </Typography>
       <Grid container spacing={2} justifyContent="center">
+          <Grid item >
+            <Button onClick={()=>setSelectedCategory("")} variant={`${selectedCategory === "" ? "contained" : "outlined"}`} color="primary">
+              All
+            </Button>
+          </Grid>
         {/* Food category options */}
-        <Grid item>
-          <Button variant="outlined">Category 1</Button>
-        </Grid>
-        <Grid item>
-          <Button variant="outlined">Category 2</Button>
-        </Grid>
+        {menuCategories?.map((category) => (
+          <Grid item key={category}>
+            <Button onClick={()=>setSelectedCategory(category)} variant={`${selectedCategory === category ? "contained" : "outlined"}`} color="primary">
+              {category}
+            </Button>
+          </Grid>
+        ))}
         {/* Add more category options as needed */}
       </Grid>
       <Grid container spacing={2}>
         {/* Food cards */}
-        {menus?.map((menu) => (
+        {filteredMenus?.map((menu) => (
           <Grid item key={menu.id} xs={12} sm={6} md={4}>
             <Card>
               <CardContent>
@@ -76,10 +100,20 @@ const MenusPage = () => {
                   alt={menu.name}
                   style={{ width: "100%", height: "auto" }}
                 />
-                <Button onClick={()=>router.push(`/restaurant/menus/edit?menu_id=${menu.id}`)} variant="outlined" color="primary">
+                <Button
+                  onClick={() =>
+                    router.push(`/restaurant/menus/edit?menu_id=${menu.id}`)
+                  }
+                  variant="outlined"
+                  color="primary"
+                >
                   Edit
                 </Button>
-                <Button onClick={()=>handleDeleteMenu(menu.id)} variant="outlined" color="secondary">
+                <Button
+                  onClick={() => handleDeleteMenu(menu.id)}
+                  variant="outlined"
+                  color="secondary"
+                >
                   Delete
                 </Button>
               </CardContent>
@@ -93,7 +127,9 @@ const MenusPage = () => {
               <Typography variant="h6" align="center">
                 Add Menu
               </Typography>
-              <Link href={`/restaurant/menus/add?restaurant_id=${userInfo?.id}`}>
+              <Link
+                href={`/restaurant/menus/add?restaurant_id=${userInfo?.id}`}
+              >
                 <Button variant="contained" color="primary">
                   Add Menu
                 </Button>

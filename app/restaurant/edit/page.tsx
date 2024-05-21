@@ -19,7 +19,7 @@ const EditUserPage = () => {
   const [address, setAddress] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
-
+  
   React.useEffect(() => {
     if (userInfo) {
       setName(userInfo.name);

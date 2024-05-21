@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import {
   Button,
@@ -48,14 +48,15 @@ const EditMenuPage = () => {
   const [menuImage, setMenuImage] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const menuId = searchParams.get("menu_id");
-  const {data : menu, isPending : isLoadingMenu} = useQuery({
-    queryKey : ["menu", menuId],
-    queryFn : async () => {
-      if (!menuId) return
-      return fetchMenu(menuId)
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const { data: menu, isPending: isLoadingMenu } = useQuery({
+    queryKey: ["menu", menuId],
+    queryFn: async () => {
+      if (!menuId) return;
+      return fetchMenu(menuId);
     },
-    enabled : !!menuId
-  })
+    enabled: !!menuId,
+  });
   const router = useRouter();
   if (!menuId) redirect("/restaurant/menus");
 
@@ -66,7 +67,7 @@ const EditMenuPage = () => {
         setName(menu.name);
         setPrice(menu.price);
         setType(menu.category);
-
+        
         if (await isImageExist(getPublicUrl("menus", `${menu.id}/image.png`))) {
           setMenuImage(getPublicUrl("menus", `${menu.id}/image.png`));
         }
@@ -86,21 +87,20 @@ const EditMenuPage = () => {
       if (!name || !price || !type || !menuImage) {
         throw new Error("Please fill in all fields");
       }
-      
+
       // update menu in database
-      await updateMenu(menuId, { name, price, category : type });
+      await updateMenu(menuId, { name, price, category: type });
 
       // update menu image in storage
       // parse base64 image from menuImage
       const parsedImage = menuImage.split(",")[1];
-      await uploadBase64Url("menus", parsedImage ,`${menuId}/image.png`)
+      await uploadBase64Url("menus", parsedImage, `${menuId}/image.png`);
 
       toast.success("Menu updated successfully");
 
       setTimeout(() => {
         router.push("/restaurant/menus");
       }, 1000);
-
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -113,7 +113,10 @@ const EditMenuPage = () => {
           Back
         </Button>
       </Link>
+      {isLoadingImage && <Typography>Loading image...</Typography>}
       <Image
+        onLoadingComplete={() => setIsLoadingImage(false)}
+        onLoad={() => setIsLoadingImage(true)}
         src={menuImage || "https://via.placeholder.com/200x200"}
         alt="Menu"
         width={200}
@@ -148,7 +151,7 @@ const EditMenuPage = () => {
           <TextField
             label="Price"
             value={price}
-            onChange={(e : any) => setPrice(e.target.value)}
+            onChange={(e: any) => setPrice(e.target.value)}
             fullWidth
           />
         </Grid>

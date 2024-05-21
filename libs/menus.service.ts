@@ -22,6 +22,27 @@ export async function fetchMenus(restaurantId: string): Promise<Menu[]> {
   }
 }
 
+export async function fetchMenuCategories(restaurantId: string): Promise<string[]> {
+  try {
+    if (!restaurantId) {
+      throw new Error("Please provide a restaurant ID");
+    }
+
+    const { data, error } = await supabase
+      .from("menus")
+      .select("category")
+      .eq("restaurantId", restaurantId)
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data.map((menu: any) => menu.category) as string[];
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
 export async function fetchMenu(menuId: string): Promise<Menu> {
   try {
     if (!menuId) {
@@ -42,6 +63,7 @@ export async function fetchMenu(menuId: string): Promise<Menu> {
     throw new Error(error.message);
   }
 }
+
 
 export async function createMenu(restaurantId: string, menuDetail: any) : Promise<Menu> {
   try {
