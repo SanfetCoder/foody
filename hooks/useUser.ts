@@ -1,4 +1,3 @@
-import { supabase } from '@/configs/supabaseClient.config';
 import { getCurrentUser } from '@/libs/auth.service';
 import { User } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';

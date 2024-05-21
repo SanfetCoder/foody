@@ -1,5 +1,4 @@
 import { supabase } from "@/configs/supabaseClient.config";
-import { Restaurant } from "@/models/restaurant.model";
 import { User } from "@supabase/supabase-js";
 
 export async function getCurrentUser(): Promise<User | null> {
