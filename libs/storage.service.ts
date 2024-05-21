@@ -1,5 +1,6 @@
 import { supabase } from "@/configs/supabaseClient.config";
 import { decode } from 'base64-arraybuffer'
+import { v4 } from "uuid";
 
 export async function uploadImage(
   bucketName: string,
@@ -41,6 +42,6 @@ export async function uploadBase64Url(bucketName: string, url: string, path: str
 export function getPublicUrl(bucketName: string, path: string) {
   const { data } = supabase.storage
     .from(bucketName)
-    .getPublicUrl(`${path}?random=${crypto.randomUUID()}`);
+    .getPublicUrl(`${path}?random=${v4()}`);
   return data.publicUrl;
 }
