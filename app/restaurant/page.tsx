@@ -27,7 +27,7 @@ const RestaurantDetailPage = () => {
         link : "/restaurant/orders"
       }
     ]
-  }, [])
+  }, [user])
 
   const { data: userProfileImage, isPending } = useQuery({
     queryKey: [user],
