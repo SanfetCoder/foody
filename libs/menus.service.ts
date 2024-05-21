@@ -3,11 +3,20 @@ import { Menu, menuSamples } from "@/models/menu.model";
 
 export async function fetchMenus(restaurantId: string): Promise<Menu[]> {
   try {
-    return new Promise((resolve, _) => {
-      setTimeout(() => {
-        resolve(menuSamples);
-      }, 1000);
-    });
+    if (!restaurantId) {
+      throw new Error("Please provide a restaurant ID");
+    }
+
+    const { data, error } = await supabase
+      .from("menus")
+      .select("*")
+      .eq("restaurantId", restaurantId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data as Menu[];
   } catch (error: any) {
     throw new Error(error.message);
   }

@@ -68,7 +68,7 @@ const AddMenuPage = () => {
 
   return (
     <div className="p-5 w-1/2 mx-auto flex flex-col items-center gap-y-5">
-      <Link href="/" className="mr-auto">
+      <Link href="/restaurant" className="mr-auto">
         <Button variant="contained" color="primary">
           Back
         </Button>

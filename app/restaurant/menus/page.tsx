@@ -10,11 +10,14 @@ import { redirect } from "next/navigation";
 const MenusPage = () => {
   const {userInfo, isLoading : isLoadingUser} = useUserInfo();
   const {data : menus, isPending : isLoadingMenus} = useQuery({
-    queryKey : ["menus"],
+    queryKey : ["menus", userInfo],
     queryFn : async () => {
-      const response = await fetchMenus("");
+      if (!userInfo) return
+      const response = await fetchMenus(userInfo.id);
+      console.log(response)
       return response
-    }
+    },
+    enabled : !!userInfo
   })
 
   if (isLoadingMenus || isLoadingUser) return <h1>loading...</h1>
