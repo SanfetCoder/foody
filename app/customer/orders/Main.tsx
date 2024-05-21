@@ -17,36 +17,38 @@ import { getPublicUrl } from "@/libs/storage.service";
 import toast from "react-hot-toast";
 import { createHistories } from "@/libs/histories.service";
 import { v4 } from "uuid";
+import { History } from "@/models/history.model";
+import MenuCard from "./MenuCard";
 
 const Main: FC<{
   menus: Menu[];
   order: Order;
 }> = ({ menus, order }) => {
   const { tableNo } = order;
-  const [cart, setCart] = useState<Menu[]>([]);
+  const [cart, setCart] = useState<History[]>([]);
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
 
   const toggleCartDrawer = () => {
     setIsCartDrawerOpen(!isCartDrawerOpen);
   };
 
-  const addToCart = (food: Menu) => {
-    setCart((prev) => [...prev, food]);
+  const addToCart = (food: Menu, amount: number) => {
+    setCart((prev) => [
+      ...prev,
+      {
+        id: v4(),
+        menuId: food.id,
+        createdAt: new Date(),
+        amount,
+        restaurantId: order.restaurantId,
+        orderId: order.id,
+      },
+    ]);
   };
 
-  const handleConfirmOrder = async (menus: Menu[]) => {
+  const handleConfirmOrder = async (histories: History[]) => {
     try {
       toast.loading("Confirming order...");
-      const histories = menus.map((menu) => {
-        return {
-          id: v4(),
-          menuId: menu.id,
-          createdAt: new Date(),
-          amount: 1,
-          restaurantId: order.restaurantId,
-          orderId: order.id,
-        };
-      });
       toast.dismiss();
 
       await createHistories(histories);
@@ -65,15 +67,19 @@ const Main: FC<{
             Your cart
           </Typography>
           <ul className="flex flex-col">
-            {cart.map((menu: Menu) => {
+            {cart.map((history: History) => {
+              const menu = menus.find((m) => m.id === history.menuId);
               return (
-                <Card key={menu.id} className="mb-4">
+                <Card key={history.id} className="mb-4">
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
-                      {menu.name}
+                      {menu!.name}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      {menu.price} Baht
+                      {menu!.price} Baht
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                      amount : {history!.amount.toString()}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -105,33 +111,7 @@ const Main: FC<{
       <h1 className="p-4 font-semibold">Menus</h1>
       <Grid container spacing={2} className="p-4">
         {menus.map((food) => {
-          const menuImage = getPublicUrl("menus", `${food.id}/image.png`);
-          return (
-            <Grid item xs={12} sm={6} md={4} key={food.id}>
-              <Card>
-                <CardContent>
-                  <img
-                    src={menuImage}
-                    alt={food.name}
-                    style={{ width: "100%", height: "auto" }}
-                  />
-                  <Typography variant="h6" gutterBottom>
-                    {food.name}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    {food.price} Baht
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => addToCart(food)}
-                  >
-                    Add to Cart
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-          );
+          return <MenuCard onAddToCart={addToCart} key={food.id} food={food} />;
         })}
       </Grid>
     </div>
