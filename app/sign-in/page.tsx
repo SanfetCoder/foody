@@ -1,12 +1,13 @@
 "use client";
 import { signIn } from "@/libs/auth.service";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const router = useRouter();
   const handleSubmit = async (e: any) => {
     try {
       e.preventDefault();
@@ -24,6 +25,12 @@ export default function SignIn() {
       await signIn(email, password)
 
       toast.success("Login successfully!");
+
+      setTimeout(() => {
+        router.push("/restaurant");
+      }
+      , 1000);
+
     } catch (error: any) {
       toast.error(error.message);
     }

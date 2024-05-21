@@ -8,7 +8,9 @@ export async function uploadImage(
   try {
     const { error } = await supabase.storage
       .from(bucketName)
-      .upload(path, imageFile);
+      .upload(path, imageFile, {
+        upsert : true
+      });
     if (error) {
       throw new Error(error.message);
     }
@@ -18,6 +20,6 @@ export async function uploadImage(
 }
 
 export function getPublicUrl(bucketName: string, path: string) {
-  const { data } = supabase.storage.from(bucketName).getPublicUrl(path);
+  const { data } = supabase.storage.from(bucketName).getPublicUrl(`${path}?random=${crypto.randomUUID()}`);
   return data.publicUrl;
 }

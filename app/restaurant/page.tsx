@@ -1,13 +1,31 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import { Card, CardContent, Typography, Grid, Button } from "@mui/material";
 import { useUser } from "@/hooks/useUser";
 import { useQuery } from "@tanstack/react-query";
 import { getPublicUrl } from "@/libs/storage.service";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const RestaurantDetailPage = () => {
   const { user, loading } = useUser();
+  const router = useRouter();
+  const options = useMemo(()=>{
+    return [
+      {
+        title : "menus",
+        link : "/restaurant/menus"
+      },
+      {
+        title : "payments",
+        link : "/restaurant/payments"
+      },
+      {
+        title : "orders",
+        link : "/restaurant/orders"
+      }
+    ]
+  }, [])
 
   const { data: userProfileImage, isPending } = useQuery({
     queryKey: [user],
@@ -19,8 +37,8 @@ const RestaurantDetailPage = () => {
   if (loading || isPending) return null;
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <Card>
+    <div className="flex flex-col justify-center items-center h-screen">
+      <Card className="cursor-pointer" onClick={()=>router.push("/restaurant/edit")}>
         <CardContent className="flex flex-col gap-y-3">
           {userProfileImage && (
             <Image
@@ -37,6 +55,15 @@ const RestaurantDetailPage = () => {
           <Typography variant="body2">Email: {user?.email}</Typography>
         </CardContent>
       </Card>
+      <ul className="flex gap-x-5 my-5">
+        {options.map((option) => (
+          <li key={option.title}>
+            <Button variant="contained" color="primary" href={option.link}>
+              {option.title}
+            </Button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
