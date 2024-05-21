@@ -5,17 +5,17 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { deleteMenu, fetchMenus } from "@/libs/menus.service";
 import { useUserInfo } from "@/hooks/useUserInfo";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 const MenusPage = () => {
   const {userInfo, isLoading : isLoadingUser} = useUserInfo();
+  const router = useRouter();
   const {data : menus, isPending : isLoadingMenus} = useQuery({
     queryKey : ["menus", userInfo],
     queryFn : async () => {
       if (!userInfo) return
       const response = await fetchMenus(userInfo.id);
-      console.log(response)
       return response
     },
     enabled : !!userInfo
@@ -76,7 +76,7 @@ const MenusPage = () => {
                   alt={menu.name}
                   style={{ width: "100%", height: "auto" }}
                 />
-                <Button variant="outlined" color="primary">
+                <Button onClick={()=>router.push(`/restaurant/menus/edit?menu_id=${menu.id}`)} variant="outlined" color="primary">
                   Edit
                 </Button>
                 <Button onClick={()=>handleDeleteMenu(menu.id)} variant="outlined" color="secondary">

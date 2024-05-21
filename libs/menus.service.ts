@@ -22,6 +22,27 @@ export async function fetchMenus(restaurantId: string): Promise<Menu[]> {
   }
 }
 
+export async function fetchMenu(menuId: string): Promise<Menu> {
+  try {
+    if (!menuId) {
+      throw new Error("Please provide a menu ID");
+    }
+
+    const { data, error } = await supabase
+      .from("menus")
+      .select("*")
+      .eq("id", menuId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data[0] as Menu;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
 export async function createMenu(restaurantId: string, menuDetail: any) {
   try {
     if (!(restaurantId || menuDetail)) {
@@ -37,6 +58,25 @@ export async function createMenu(restaurantId: string, menuDetail: any) {
       throw new Error(error.message);
     }
 
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
+export async function updateMenu(menuId: string, menuDetail: any) {
+  try {
+    if (!(menuId || menuDetail)) {
+      throw new Error("Please fill in all fields");
+    }
+
+    const { error } = await supabase
+      .from("menus")
+      .update(menuDetail)
+      .eq("id", menuId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
   } catch (error: any) {
     throw new Error(error.message);
   }
