@@ -14,6 +14,9 @@ import toast from "react-hot-toast";
 import { fetchMenu, updateMenu } from "@/libs/menus.service";
 import { redirect, useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { getPublicUrl, uploadBase64Url } from "@/libs/storage.service";
+import { isImageExist } from "@/libs/utils";
+import { get } from "http";
 
 const foodTypes = [
   "Pizza",
@@ -63,7 +66,10 @@ const EditMenuPage = () => {
         setName(menu.name);
         setPrice(menu.price);
         setType(menu.category);
-        setMenuImage(menu.image);
+
+        if (await isImageExist(getPublicUrl("menus", `${menu.id}/image.png`))) {
+          setMenuImage(getPublicUrl("menus", `${menu.id}/image.png`));
+        }
       } catch (error) {
         toast.error("Error fetching menu data");
       }
@@ -85,6 +91,9 @@ const EditMenuPage = () => {
       await updateMenu(menuId, { name, price, category : type });
 
       // update menu image in storage
+      // parse base64 image from menuImage
+      const parsedImage = menuImage.split(",")[1];
+      await uploadBase64Url("menus", parsedImage ,`${menuId}/image.png`)
 
       toast.success("Menu updated successfully");
 

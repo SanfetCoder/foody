@@ -6,6 +6,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getPublicUrl } from "@/libs/storage.service";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { signOut } from "@/libs/auth.service";
+import toast from "react-hot-toast";
 
 const RestaurantDetailPage = () => {
   const { user, loading } = useUser();
@@ -53,6 +55,18 @@ const RestaurantDetailPage = () => {
             {user?.email}
           </Typography>
           <Typography variant="body2">Email: {user?.email}</Typography>
+          <Button onClick={()=>{
+            signOut();
+
+            toast.success("Sign out successfully");
+
+            setTimeout(() => {
+              router.push("/ho");
+            }
+            , 1000);
+          }} variant="contained" color="error">
+            Sign Out
+          </Button>
         </CardContent>
       </Card>
       <ul className="flex gap-x-5 my-5">

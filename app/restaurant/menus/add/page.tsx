@@ -13,6 +13,7 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { createMenu } from "@/libs/menus.service";
 import { redirect, useParams, useRouter, useSearchParams } from "next/navigation";
+import { uploadBase64Url, uploadImage } from "@/libs/storage.service";
 
 const foodTypes = [
   "Pizza",
@@ -55,10 +56,13 @@ const AddMenuPage = () => {
       }
       
       // add menu to database
-      await createMenu(restaurant_id,{ name, price, type})
+      const createdMenu = await createMenu(restaurant_id,{ name, price, category : type})
 
       // update menu image in storage
-
+      // parse base64 image from menuImage
+      const parsedImage = menuImage.split(",")[1];
+      console.log(parsedImage)
+      await uploadBase64Url("menus", parsedImage ,`${createdMenu.id}/image.png`)
       toast.success("Menu added successfully");
 
       setTimeout(() => {

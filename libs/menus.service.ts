@@ -43,21 +43,24 @@ export async function fetchMenu(menuId: string): Promise<Menu> {
   }
 }
 
-export async function createMenu(restaurantId: string, menuDetail: any) {
+export async function createMenu(restaurantId: string, menuDetail: any) : Promise<Menu> {
   try {
     if (!(restaurantId || menuDetail)) {
       throw new Error("Please fill in all fields");
     }
     
-    const { error } = await supabase
+    const {data, error } = await supabase
       .from("menus")
       .insert({...menuDetail, restaurantId : restaurantId})
-      .eq("restaurant_id", restaurantId);
+      .eq("restaurant_id", restaurantId)
+      .select()
+      .single()
 
     if (error) {
       throw new Error(error.message);
     }
 
+    return data as Menu;
   } catch (error: any) {
     throw new Error(error.message);
   }
