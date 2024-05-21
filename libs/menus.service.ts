@@ -41,3 +41,22 @@ export async function createMenu(restaurantId: string, menuDetail: any) {
     throw new Error(error.message);
   }
 }
+
+export async function deleteMenu(menuId : string){
+  try {
+    if (!menuId) {
+      throw new Error("Please provide a menu ID");
+    }
+
+    const { error } = await supabase
+      .from("menus")
+      .delete()
+      .eq("id", menuId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  } catch (error : any) {
+    throw new Error(error.message)
+  }
+}

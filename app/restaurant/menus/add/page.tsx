@@ -12,7 +12,7 @@ import Link from "next/link";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { createMenu } from "@/libs/menus.service";
-import { redirect, useParams, useSearchParams } from "next/navigation";
+import { redirect, useParams, useRouter, useSearchParams } from "next/navigation";
 
 const foodTypes = [
   "Pizza",
@@ -44,7 +44,7 @@ const AddMenuPage = () => {
   const [menuImage, setMenuImage] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const restaurant_id = searchParams.get("restaurant_id");
-
+  const router = useRouter();
   if (!restaurant_id) redirect("/restaurant");
 
   const handleSubmit = async () => {
@@ -60,6 +60,11 @@ const AddMenuPage = () => {
       // update menu image in storage
 
       toast.success("Menu added successfully");
+
+      setTimeout(() => {
+        router.push("/restaurant/menus")
+      }
+      , 1000);
 
     } catch (error: any) {
       toast.error(error.message);

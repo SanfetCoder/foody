@@ -3,9 +3,10 @@ import React from "react";
 import { Button, Card, CardContent, Typography, Grid } from "@mui/material";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchMenus } from "@/libs/menus.service";
+import { deleteMenu, fetchMenus } from "@/libs/menus.service";
 import { useUserInfo } from "@/hooks/useUserInfo";
 import { redirect } from "next/navigation";
+import toast from "react-hot-toast";
 
 const MenusPage = () => {
   const {userInfo, isLoading : isLoadingUser} = useUserInfo();
@@ -22,6 +23,21 @@ const MenusPage = () => {
 
   if (isLoadingMenus || isLoadingUser) return <h1>loading...</h1>
   if (!userInfo) redirect("/restaurant")
+
+  async function handleDeleteMenu(menuId : string){
+    try {
+      await deleteMenu(menuId);
+
+      toast.success("Menu deleted successfully");
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error : any) {
+      toast.error(error.message)
+    }
+  }
+
   return (
     <div className="p-5">
       <Link href={"/restaurant"}>
@@ -63,7 +79,7 @@ const MenusPage = () => {
                 <Button variant="outlined" color="primary">
                   Edit
                 </Button>
-                <Button variant="outlined" color="secondary">
+                <Button onClick={()=>handleDeleteMenu(menu.id)} variant="outlined" color="secondary">
                   Delete
                 </Button>
               </CardContent>
