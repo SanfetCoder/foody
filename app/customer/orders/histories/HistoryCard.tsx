@@ -1,5 +1,6 @@
 import React, { FC } from "react";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, Typography, Chip } from "@mui/material";
+import { KITCHEN_STATUS } from "@/enums/history.enum";
 
 const HistoryCard: FC<{
   history: any;
@@ -19,7 +20,16 @@ const HistoryCard: FC<{
           Total price : {(menus.price * amount).toFixed(2)} Baht
         </Typography>
         <Typography className="font-semibold" variant="body1" gutterBottom>
-          {status}
+          <Chip
+            label={status}
+            color={
+              status === KITCHEN_STATUS.preparing
+                ? "warning"
+                : status === KITCHEN_STATUS.canceled
+                ? "error"
+                : "success"
+            }
+          />
         </Typography>
         <Typography variant="body1" gutterBottom>
           Created At: {new Date(createdAt).toLocaleDateString()}{" "}

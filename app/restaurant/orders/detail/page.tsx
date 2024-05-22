@@ -10,7 +10,7 @@ import {
   Chip,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { fetchOrder, fetchOrders } from "@/libs/order.service";
+import { fetchOrder, fetchOrders, updateOrder } from "@/libs/order.service";
 import {
   getHistories,
   getHistoriesWithMenus,
@@ -58,7 +58,28 @@ const OrderDetailPage = () => {
         window.location.reload();
       }, 1000);
     } catch (error: any) {
-      throw new Error(error.message);
+      toast.error(error.message);
+    }
+  }
+
+  async function handleCancel(historyId: string, price : number) {
+    try {
+      if (!orderId) throw new Error("Please enter order id");
+      toast.loading("Canceling...");
+      await updateHistory(historyId, { status: KITCHEN_STATUS.canceled });
+
+      // update the price of order
+      const currentOrderInfo = await fetchOrder(orderId);
+      await updateOrder(orderId, {
+        totalPrice: currentOrderInfo.totalPrice - price,
+      });
+      toast.dismiss();
+      toast.success("Canceled");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error: any) {
+      toast.error(error.message);
     }
   }
 
@@ -129,7 +150,11 @@ const OrderDetailPage = () => {
                 ) : null}
 
                 {item.status === KITCHEN_STATUS.preparing ? (
-                  <Button variant="contained" color="error">
+                  <Button
+                    onClick={() => handleCancel(item.id, item.menus.price * item.amount)}
+                    variant="contained"
+                    color="error"
+                  >
                     Cancel
                   </Button>
                 ) : null}
