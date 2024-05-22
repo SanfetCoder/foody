@@ -14,6 +14,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useQuery } from "@tanstack/react-query";
 import { fetchOrders } from "@/libs/order.service";
 import { useUser } from "@/hooks/useUser";
+import { ORDER_STATUS } from "@/enums/order.enum";
 
 const RestaurantOrdersPage = () => {
   const router = useRouter();
@@ -28,6 +29,9 @@ const RestaurantOrdersPage = () => {
     },
     enabled: !!user,
   });
+  const inProgressOrders = orders?.filter(
+    (order) => order.status === ORDER_STATUS.inProgress
+  );
 
   if (isLoadingOrders || loading) return <h1>Loading...</h1>;
   if (!user?.id) redirect("/restaurant");
@@ -61,9 +65,9 @@ const RestaurantOrdersPage = () => {
           <Typography>Ongoing Orders</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          {orders ? (
-            orders.length > 0 ? (
-              orders?.map((order) => (
+          {inProgressOrders ? (
+            inProgressOrders.length > 0 ? (
+              inProgressOrders?.map((order) => (
                 <Card key={order.id} className="mb-4">
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
@@ -73,11 +77,12 @@ const RestaurantOrdersPage = () => {
                       {/* {order.menuCount} menus, {order.paxCount} pax */}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      Total: ${order.totalPrice}
+                      Total: {order.totalPrice} Baht
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Placed at: {new Date(order.createdAt).toLocaleString()}
                     </Typography>
+                    <Button variant="contained" color="success">Payment</Button>
                   </CardContent>
                 </Card>
               ))

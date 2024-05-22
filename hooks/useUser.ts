@@ -8,9 +8,16 @@ export const useUser = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const currentUser = await getCurrentUser();
-      setUser(currentUser)
-      setLoading(false)
+      try {
+        const currentUser = await getCurrentUser();
+        setUser(currentUser);
+      }
+      catch (error: any) {
+        setUser(null)
+      }
+      finally {
+        setLoading(false);
+      }
     };
 
     fetchUser();

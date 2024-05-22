@@ -19,6 +19,7 @@ import { createHistories } from "@/libs/histories.service";
 import { v4 } from "uuid";
 import { History } from "@/models/history.model";
 import MenuCard from "./MenuCard";
+import { useRouter } from "next/navigation";
 
 const Main: FC<{
   menus: Menu[];
@@ -27,7 +28,7 @@ const Main: FC<{
   const { tableNo } = order;
   const [cart, setCart] = useState<History[]>([]);
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
-
+  const router = useRouter();
   const toggleCartDrawer = () => {
     setIsCartDrawerOpen(!isCartDrawerOpen);
   };
@@ -49,9 +50,8 @@ const Main: FC<{
   const handleConfirmOrder = async (histories: History[]) => {
     try {
       toast.loading("Confirming order...");
-      toast.dismiss();
-
       await createHistories(histories);
+      toast.dismiss();
       toast.success("Order confirmed");
       setCart([]);
     } catch (error: any) {
@@ -98,7 +98,7 @@ const Main: FC<{
         </div>
       </Drawer>
       <nav className="flex justify-between items-center bg-gray-800 text-white py-4 px-6 w-full">
-        <MdHistory size={20} />
+        <MdHistory onClick={()=>router.push(`/customer/orders/histories?orderId=${order.id}&restaurantId=${order.restaurantId}`)} size={20} />
         <Typography variant="h5">Table {tableNo}</Typography>
         <Badge
           onClick={toggleCartDrawer}
