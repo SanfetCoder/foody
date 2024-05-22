@@ -18,6 +18,26 @@ export async function getHistories(orderId: string) {
     throw new Error(error.message);
   }
 }
+
+export async function updateHistory(id: string, detail: any) {
+  try {
+    const { data, error } = await supabase
+      .from("histories")
+      .update(detail)
+      .eq("id", id)
+      .select("*")
+      .single()
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data as History;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
 export async function getHistoriesWithMenus(orderId: string) {
   try {
     const { data, error } = await supabase

@@ -16,7 +16,7 @@ const Page = async ({
   const order = await fetchOrder(orderId);
   // check the status of the order by using order id
   if (order.status !== ORDER_STATUS.inProgress)
-    return <h1>The order is already complete</h1>;
+    return <h1 className="text-center">The order is not available right now</h1>;
   const menus = await fetchMenus(restaurantId);
 
   return <Main menus={menus} order={order} />;

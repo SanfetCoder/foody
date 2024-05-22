@@ -4,7 +4,7 @@ import { Card, CardContent, Typography } from "@mui/material";
 const HistoryCard: FC<{
   history: any;
 }> = ({ history }) => {
-  const { createdAt, amount, menus, status } = history;
+  const { createdAt, amount, menus, status, price } = history;
 
   return (
     <Card>
@@ -13,7 +13,10 @@ const HistoryCard: FC<{
           {menus.name}
         </Typography>
         <Typography variant="body1" gutterBottom>
-          Amount: {amount}
+          Amount : {amount}
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          Total price : {(menus.price * amount).toFixed(2)} Baht
         </Typography>
         <Typography className="font-semibold" variant="body1" gutterBottom>
           {status}

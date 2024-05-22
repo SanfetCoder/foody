@@ -81,3 +81,26 @@ export async function cancelOrder(orderId: string): Promise<void> {
     throw new Error(error.message);
   }
 }
+
+export async function updateOrder(orderId: string, detail : any): Promise<Order> {
+  try {
+    if (!orderId) {
+      throw new Error("Please provide an order ID");
+    }
+
+    const { data, error } = await supabase
+      .from("orders")
+      .update(detail)
+      .eq("id", orderId)
+      .select("*")
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data as Order;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}

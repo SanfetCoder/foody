@@ -22,6 +22,8 @@ import MenuCard from "./MenuCard";
 import { useRouter } from "next/navigation";
 import { ORDER_STATUS } from "@/enums/order.enum";
 import { KITCHEN_STATUS } from "@/enums/history.enum";
+import { fetchMenu } from "@/libs/menus.service";
+import { fetchOrder, updateOrder } from "@/libs/order.service";
 
 const Main: FC<{
   menus: Menu[];
@@ -45,7 +47,7 @@ const Main: FC<{
         amount,
         restaurantId: order.restaurantId,
         orderId: order.id,
-        status : KITCHEN_STATUS.preparing
+        status: KITCHEN_STATUS.preparing,
       },
     ]);
   };
@@ -56,12 +58,23 @@ const Main: FC<{
       newCart.splice(index, 1);
       return newCart;
     });
-  }
+  };
 
   const handleConfirmOrder = async (histories: History[]) => {
     try {
       toast.loading("Confirming order...");
-      await createHistories(histories);
+      const createdHistories = await createHistories(histories);
+      const totalPricePromise = createdHistories.map(async (history) => {
+        const menu = await fetchMenu(history.menuId);
+        return menu!.price * history.amount;
+      });
+      
+      const totalPrice = await Promise.all(totalPricePromise).then((prices) => prices.reduce((acc, curr) => acc + curr, 0));
+
+      const currentOrderInfo = await fetchOrder(order.id);
+
+      await updateOrder(order.id, { totalPrice : currentOrderInfo.totalPrice + totalPrice})
+
       toast.dismiss();
       toast.success("Order confirmed");
       setCart([]);
@@ -96,8 +109,8 @@ const Main: FC<{
                       variant="contained"
                       color="error"
                       onClick={() => {
-                        deleteFromCart(cart.indexOf(history))
-                        toast.success("Deleted")
+                        deleteFromCart(cart.indexOf(history));
+                        toast.success("Deleted");
                       }}
                     >
                       Delete
@@ -119,7 +132,14 @@ const Main: FC<{
         </div>
       </Drawer>
       <nav className="flex justify-between items-center bg-gray-800 text-white py-4 px-6 w-full">
-        <MdHistory onClick={()=>router.push(`/customer/orders/histories?orderId=${order.id}&restaurantId=${order.restaurantId}`)} size={20} />
+        <MdHistory
+          onClick={() =>
+            router.push(
+              `/customer/orders/histories?orderId=${order.id}&restaurantId=${order.restaurantId}`
+            )
+          }
+          size={20}
+        />
         <Typography variant="h5">Table {tableNo}</Typography>
         <Badge
           onClick={toggleCartDrawer}

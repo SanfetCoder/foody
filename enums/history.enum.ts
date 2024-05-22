@@ -1,5 +1,5 @@
 export enum KITCHEN_STATUS {
   preparing = "preparing",
-  ready = "ready",
+  canceled = "canceled",
   served = "served",
 }

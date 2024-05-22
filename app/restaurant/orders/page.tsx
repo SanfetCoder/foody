@@ -108,6 +108,13 @@ const RestaurantOrdersPage = () => {
                       >
                         Cancel order
                       </Button>
+                      <Button
+                        onClick={()=>router.push(`/restaurant/orders/detail?orderId=${order.id}`)}
+                        variant="contained"
+                        color="primary"
+                      >
+                        Detail
+                      </Button>
                     </ul>
                   </CardContent>
                 </Card>
