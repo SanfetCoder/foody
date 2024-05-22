@@ -1,4 +1,5 @@
 import { supabase } from "@/configs/supabaseClient.config";
+import { ORDER_STATUS } from "@/enums/order.enum";
 import { Order } from "@/models/order.model";
 
 export async function fetchOrders(restaurantId: string): Promise<Order[]> {
@@ -57,6 +58,25 @@ export async function createOrder(order: Order): Promise<Order> {
     }
 
     return data as Order;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
+export async function cancelOrder(orderId: string): Promise<void> {
+  try {
+    if (!orderId) {
+      throw new Error("Please provide an order ID");
+    }
+
+    const { error } = await supabase
+      .from("orders")
+      .update({ status: ORDER_STATUS.canceled })
+      .eq("id", orderId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
   } catch (error: any) {
     throw new Error(error.message);
   }

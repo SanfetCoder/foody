@@ -1,11 +1,12 @@
-import React, { FC, useState } from 'react';
-import { Card, CardContent, Typography, Button, Grid } from '@mui/material';
-import { Menu } from '@/models/menu.model';
-import { getPublicUrl } from '@/libs/storage.service';
+import React, { FC, useState } from "react";
+import { Card, CardContent, Typography, Button, Grid } from "@mui/material";
+import { Menu } from "@/models/menu.model";
+import { getPublicUrl } from "@/libs/storage.service";
+import toast from "react-hot-toast";
 
-const MenuCard : FC<{
-  food : Menu,
-  onAddToCart : any
+const MenuCard: FC<{
+  food: Menu;
+  onAddToCart: any;
 }> = ({ food, onAddToCart }) => {
   const [amount, setAmount] = useState(1);
   const menuImage = getPublicUrl("menus", `${food.id}/image.png`);
@@ -27,7 +28,7 @@ const MenuCard : FC<{
           <img
             src={menuImage}
             alt={food.name}
-            style={{ width: '100%', height: 'auto' }}
+            style={{ width: "100%", height: "auto" }}
           />
           <Typography variant="h6" gutterBottom>
             {food.name}
@@ -50,9 +51,10 @@ const MenuCard : FC<{
             <Button
               variant="contained"
               color="primary"
-              onClick={()=>{
-                onAddToCart(food, amount)
-                setAmount(1)
+              onClick={() => {
+                onAddToCart(food, amount);
+                setAmount(1);
+                toast.success("Added to cart");
               }}
             >
               Add to Cart

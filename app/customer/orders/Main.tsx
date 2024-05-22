@@ -20,6 +20,8 @@ import { v4 } from "uuid";
 import { History } from "@/models/history.model";
 import MenuCard from "./MenuCard";
 import { useRouter } from "next/navigation";
+import { ORDER_STATUS } from "@/enums/order.enum";
+import { KITCHEN_STATUS } from "@/enums/history.enum";
 
 const Main: FC<{
   menus: Menu[];
@@ -43,9 +45,18 @@ const Main: FC<{
         amount,
         restaurantId: order.restaurantId,
         orderId: order.id,
+        status : KITCHEN_STATUS.preparing
       },
     ]);
   };
+
+  const deleteFromCart = (index: number) => {
+    setCart((prev) => {
+      const newCart = [...prev];
+      newCart.splice(index, 1);
+      return newCart;
+    });
+  }
 
   const handleConfirmOrder = async (histories: History[]) => {
     try {
@@ -81,6 +92,16 @@ const Main: FC<{
                     <Typography variant="body1" gutterBottom>
                       amount : {history!.amount.toString()}
                     </Typography>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => {
+                        deleteFromCart(cart.indexOf(history))
+                        toast.success("Deleted")
+                      }}
+                    >
+                      Delete
+                    </Button>
                   </CardContent>
                 </Card>
               );

@@ -12,13 +12,13 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useQuery } from "@tanstack/react-query";
-import { fetchOrders } from "@/libs/order.service";
+import { cancelOrder, fetchOrders } from "@/libs/order.service";
 import { useUser } from "@/hooks/useUser";
 import { ORDER_STATUS } from "@/enums/order.enum";
+import toast from "react-hot-toast";
 
 const RestaurantOrdersPage = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { user, loading } = useUser();
   const { data: orders, isPending: isLoadingOrders } = useQuery({
     queryKey: [user],
@@ -32,6 +32,21 @@ const RestaurantOrdersPage = () => {
   const inProgressOrders = orders?.filter(
     (order) => order.status === ORDER_STATUS.inProgress
   );
+
+  async function handleCancelOrder(orderId: string) {
+    try {
+      if (!user) throw new Error("Please login to cancel order");
+
+      await cancelOrder(orderId);
+
+      toast.success("Order canceled");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  }
 
   if (isLoadingOrders || loading) return <h1>Loading...</h1>;
   if (!user?.id) redirect("/restaurant");
@@ -82,7 +97,18 @@ const RestaurantOrdersPage = () => {
                     <Typography variant="body2" color="text.secondary">
                       Placed at: {new Date(order.createdAt).toLocaleString()}
                     </Typography>
-                    <Button variant="contained" color="success">Payment</Button>
+                    <ul className="flex gap-x-3 mt-5">
+                      <Button variant="contained" color="success">
+                        Generate Payment QR
+                      </Button>
+                      <Button
+                        onClick={() => handleCancelOrder(order.id)}
+                        variant="contained"
+                        color="error"
+                      >
+                        Cancel order
+                      </Button>
+                    </ul>
                   </CardContent>
                 </Card>
               ))
