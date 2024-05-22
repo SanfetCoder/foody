@@ -19,18 +19,16 @@ const HistoryCard: FC<{
         <Typography variant="body1" gutterBottom>
           Total price : {(menus.price * amount).toFixed(2)} Baht
         </Typography>
-        <Typography className="font-semibold" variant="body1" gutterBottom>
-          <Chip
-            label={status}
-            color={
-              status === KITCHEN_STATUS.preparing
-                ? "warning"
-                : status === KITCHEN_STATUS.canceled
-                ? "error"
-                : "success"
-            }
-          />
-        </Typography>
+        <Chip
+          label={status}
+          color={
+            status === KITCHEN_STATUS.preparing
+              ? "warning"
+              : status === KITCHEN_STATUS.canceled
+              ? "error"
+              : "success"
+          }
+        />
         <Typography variant="body1" gutterBottom>
           Created At: {new Date(createdAt).toLocaleDateString()}{" "}
           {new Date(createdAt).toLocaleTimeString()}

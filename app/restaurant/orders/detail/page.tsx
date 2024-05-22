@@ -112,7 +112,7 @@ const OrderDetailPage = () => {
           {/* Pax: {pax} */}
         </Typography>
         <Typography variant="body1" gutterBottom>
-          Created At: {new Date(createdAt).toLocaleDateString()}
+          Created At: {new Date(createdAt).toLocaleDateString()} {new Date(createdAt).toLocaleTimeString()}
         </Typography>
       </div>
 
