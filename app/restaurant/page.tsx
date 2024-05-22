@@ -8,9 +8,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { signOut } from "@/libs/auth.service";
 import toast from "react-hot-toast";
+import { useUserInfo } from "@/hooks/useUserInfo";
 
 const RestaurantDetailPage = () => {
-  const { user, loading } = useUser();
+  const { userInfo, isLoading : loading } = useUserInfo();
   const router = useRouter();
   const options = useMemo(()=>{
     return [
@@ -27,13 +28,13 @@ const RestaurantDetailPage = () => {
         link : "/restaurant/orders"
       }
     ]
-  }, [user])
+  }, [userInfo])
 
   const { data: userProfileImage, isPending } = useQuery({
-    queryKey: [user],
+    queryKey: [userInfo],
     queryFn: () => {
-      if (!user) return null;
-      return getPublicUrl("restaurants", `${user?.id}/image.png`);
+      if (!userInfo) return null;
+      return getPublicUrl("restaurants", `${userInfo?.id}/image.png`);
     },
   });
   if (loading || isPending) return null;
@@ -52,9 +53,9 @@ const RestaurantDetailPage = () => {
             />
           )}
           <Typography variant="h5" component="div">
-            {user?.email}
+            {userInfo?.name}
           </Typography>
-          <Typography variant="body2">Email: {user?.email}</Typography>
+          <Typography variant="body2">Email: {userInfo?.email}</Typography>
           <Button onClick={()=>{
             signOut();
 
