@@ -1,7 +1,6 @@
 "use client";
 import React, { useMemo } from "react";
 import { Card, CardContent, Typography, Grid, Button } from "@mui/material";
-import { useUser } from "@/hooks/useUser";
 import { useQuery } from "@tanstack/react-query";
 import { getPublicUrl } from "@/libs/storage.service";
 import Image from "next/image";
@@ -18,10 +17,6 @@ const RestaurantDetailPage = () => {
       {
         title : "menus",
         link : "/restaurant/menus"
-      },
-      {
-        title : "payments",
-        link : "/restaurant/payments"
       },
       {
         title : "orders",
@@ -64,6 +59,7 @@ const RestaurantDetailPage = () => {
             setTimeout(() => {
               router.push("/ho");
             }
+            
             , 1000);
           }} variant="contained" color="error">
             Sign Out

@@ -46,6 +46,7 @@ const EditMenuPage = () => {
   const [price, setPrice] = useState(0);
   const [type, setType] = useState("");
   const [menuImage, setMenuImage] = useState<string | null>(null);
+  const [description, setDescription] = useState("");
   const searchParams = useSearchParams();
   const menuId = searchParams.get("menu_id");
   const [isLoadingImage, setIsLoadingImage] = useState(false);
@@ -67,7 +68,7 @@ const EditMenuPage = () => {
         setName(menu.name);
         setPrice(menu.price);
         setType(menu.category);
-        
+        setDescription(menu.description)
         if (await isImageExist(getPublicUrl("menus", `${menu.id}/image.png`))) {
           setMenuImage(getPublicUrl("menus", `${menu.id}/image.png`));
         }
@@ -144,6 +145,14 @@ const EditMenuPage = () => {
             label="Menu Title"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             fullWidth
           />
         </Grid>

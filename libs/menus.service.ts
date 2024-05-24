@@ -1,5 +1,5 @@
 import { supabase } from "@/configs/supabaseClient.config";
-import { Menu, menuSamples } from "@/models/menu.model";
+import { Menu } from "@/models/menu.model";
 
 export async function fetchMenus(restaurantId: string): Promise<Menu[]> {
   try {

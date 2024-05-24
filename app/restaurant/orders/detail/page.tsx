@@ -18,6 +18,7 @@ import {
 } from "@/libs/histories.service";
 import { KITCHEN_STATUS } from "@/enums/history.enum";
 import toast from "react-hot-toast";
+import { ORDER_STATUS } from "@/enums/order.enum";
 
 const OrderDetailPage = () => {
   const router = useRouter();
@@ -83,9 +84,14 @@ const OrderDetailPage = () => {
     }
   }
 
-  const generateQRPayment = () => {
-    // Generate QR code for payment
-    // ...
+  const handleCompleteOrder = async () => {
+    try {
+      await updateOrder(orderId, { status: ORDER_STATUS.done, updatedAt : new Date() });
+
+      toast.success("Order completed");
+    } catch (error : any) {
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -109,9 +115,6 @@ const OrderDetailPage = () => {
           Table No: {tableNo}
         </Typography>
         <Typography variant="body1" gutterBottom>
-          {/* Pax: {pax} */}
-        </Typography>
-        <Typography variant="body1" gutterBottom>
           Created At: {new Date(createdAt).toLocaleDateString()} {new Date(createdAt).toLocaleTimeString()}
         </Typography>
       </div>
@@ -126,6 +129,9 @@ const OrderDetailPage = () => {
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                   Quantity: {item.amount}
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  {item.menus.price} Baht
                 </Typography>
                 <Chip
                   label={item.status}
@@ -166,8 +172,8 @@ const OrderDetailPage = () => {
 
       <div className="p-4 flex justify-between items-center">
         <Typography variant="h6">Total Price: {totalPrice} Baht</Typography>
-        <Button variant="contained" color="primary" onClick={generateQRPayment}>
-          Generate QR Payment
+        <Button variant="contained" color="primary" onClick={handleCompleteOrder}>
+          Mark as completed
         </Button>
       </div>
     </div>

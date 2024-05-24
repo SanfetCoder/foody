@@ -71,7 +71,7 @@ export async function cancelOrder(orderId: string): Promise<void> {
 
     const { error } = await supabase
       .from("orders")
-      .update({ status: ORDER_STATUS.canceled })
+      .update({ status: ORDER_STATUS.canceled, updatedAt : new Date() })
       .eq("id", orderId);
 
     if (error) {

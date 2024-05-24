@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useQuery } from "@tanstack/react-query";
-import { cancelOrder, fetchOrders } from "@/libs/order.service";
+import { cancelOrder, fetchOrders, updateOrder } from "@/libs/order.service";
 import { useUser } from "@/hooks/useUser";
 import { ORDER_STATUS } from "@/enums/order.enum";
 import toast from "react-hot-toast";
@@ -65,7 +65,7 @@ const RestaurantOrdersPage = () => {
         <Button
           variant="text"
           color="inherit"
-          onClick={() => router.push("/restaurant/orders/history")}
+          onClick={() => router.push("/restaurant/orders/histories")}
         >
           History
         </Button>
@@ -98,8 +98,23 @@ const RestaurantOrdersPage = () => {
                       Placed at: {new Date(order.createdAt).toLocaleString()}
                     </Typography>
                     <ul className="flex gap-x-3 mt-5">
-                      <Button variant="contained" color="success">
-                        Generate Payment QR
+                      <Button
+                        onClick={async () => {
+                          await updateOrder(order.id, {
+                            status: ORDER_STATUS.done,
+                            updatedAt : new Date()
+                          });
+
+                          toast.success("Order marked as completed");
+
+                          setTimeout(() => {
+                            window.location.reload();
+                          }, 1000);
+                        }}
+                        variant="contained"
+                        color="success"
+                      >
+                        Mark as completed
                       </Button>
                       <Button
                         onClick={() => handleCancelOrder(order.id)}
@@ -109,7 +124,11 @@ const RestaurantOrdersPage = () => {
                         Cancel order
                       </Button>
                       <Button
-                        onClick={()=>router.push(`/restaurant/orders/detail?orderId=${order.id}`)}
+                        onClick={() =>
+                          router.push(
+                            `/restaurant/orders/detail?orderId=${order.id}`
+                          )
+                        }
                         variant="contained"
                         color="primary"
                       >

@@ -43,6 +43,7 @@ const AddMenuPage = () => {
   const [price, setPrice] = useState("");
   const [type, setType] = useState("");
   const [menuImage, setMenuImage] = useState<string | null>(null);
+  const [description, setDescription] = useState("");
   const searchParams = useSearchParams();
   const restaurant_id = searchParams.get("restaurant_id");
   const router = useRouter();
@@ -56,7 +57,7 @@ const AddMenuPage = () => {
       }
       
       // add menu to database
-      const createdMenu = await createMenu(restaurant_id,{ name, price, category : type})
+      const createdMenu = await createMenu(restaurant_id,{ name, price, category : type, description})
 
       // update menu image in storage
       // parse base64 image from menuImage
@@ -118,6 +119,14 @@ const AddMenuPage = () => {
             label="Price"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             fullWidth
           />
         </Grid>

@@ -11,6 +11,7 @@ import {
 import { useUserInfo } from "@/hooks/useUserInfo";
 import { redirect, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { getPublicUrl } from "@/libs/storage.service";
 
 const MenusPage = () => {
   const { userInfo, isLoading: isLoadingUser } = useUserInfo();
@@ -84,21 +85,26 @@ const MenusPage = () => {
       </Grid>
       <Grid container spacing={2}>
         {/* Food cards */}
-        {filteredMenus?.map((menu) => (
+        {filteredMenus?.map((menu) => {
+          const menuImage = getPublicUrl("menus", `${menu.id}/image.png`)
+          return (
           <Grid item key={menu.id} xs={12} sm={6} md={4}>
             <Card>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
                   {menu.name}
                 </Typography>
+                <Typography variant="h6" gutterBottom>
+                  {menu.description}
+                </Typography>
                 <Typography variant="body1">Price: {menu.price}</Typography>
                 <Typography variant="body2">
                   Category: {menu.category}
                 </Typography>
                 <img
-                  src={menu.image}
+                  src={menuImage}
                   alt={menu.name}
-                  style={{ width: "100%", height: "auto" }}
+                  className="w-[150px] h-[150px] object-cover rounded-full"
                 />
                 <Button
                   onClick={() =>
@@ -119,7 +125,7 @@ const MenusPage = () => {
               </CardContent>
             </Card>
           </Grid>
-        ))}
+        )})}
         {/* Add menu button */}
         <Grid item xs={12} sm={6} md={4}>
           <Card>
