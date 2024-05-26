@@ -50,6 +50,8 @@ const EditMenuPage = () => {
   const searchParams = useSearchParams();
   const menuId = searchParams.get("menu_id");
   const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const [hasUserInputMenuImage, setHasUserInputMenuImage] = useState(false);
+
   const { data: menu, isPending: isLoadingMenu } = useQuery({
     queryKey: ["menu", menuId],
     queryFn: async () => {
@@ -68,7 +70,7 @@ const EditMenuPage = () => {
         setName(menu.name);
         setPrice(menu.price);
         setType(menu.category);
-        setDescription(menu.description)
+        setDescription(menu.description);
         if (await isImageExist(getPublicUrl("menus", `${menu.id}/image.png`))) {
           setMenuImage(getPublicUrl("menus", `${menu.id}/image.png`));
         }
@@ -94,7 +96,10 @@ const EditMenuPage = () => {
 
       // update menu image in storage
       // parse base64 image from menuImage
-      const parsedImage = menuImage.split(",")[1];
+      const parsedImage = hasUserInputMenuImage
+        ? menuImage.split(",")[1]
+        : menuImage;
+
       await uploadBase64Url("menus", parsedImage, `${menuId}/image.png`);
 
       toast.success("Menu updated successfully");
@@ -134,6 +139,7 @@ const EditMenuPage = () => {
             reader.readAsDataURL(file);
             reader.onload = () => {
               setMenuImage(reader.result as string);
+              setHasUserInputMenuImage(true);
             };
           }
         }}
