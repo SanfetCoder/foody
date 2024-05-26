@@ -1,12 +1,14 @@
 "use client";
+import { useUser } from "@/hooks/useUser";
 import { signIn } from "@/libs/auth.service";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const {user, loading} = useUser();
   const router = useRouter();
   const handleSubmit = async (e: any) => {
     try {
@@ -35,6 +37,10 @@ export default function SignIn() {
       toast.error(error.message);
     }
   };
+
+  if (loading) return <h1>Loading...</h1>;
+
+  if (user) redirect("/restaurant");
 
   return (
     <div className="flex justify-center items-center h-screen">

@@ -1,8 +1,9 @@
 "use client";
+import { useUser } from "@/hooks/useUser";
 import { signUp } from "@/libs/auth.service";
 import { createRestaurant } from "@/libs/restaurants.service";
 import { uploadImage } from "@/libs/storage.service";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -13,6 +14,7 @@ export default function SignUp() {
   const [restaurantName, setRestaurantName] = useState("");
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [restaurantAddress, setRestaurantAddress] = useState("");
+  const {user, loading} = useUser();
   const router = useRouter();
 
   const handleSubmit = async (e: any) => {
@@ -81,6 +83,10 @@ export default function SignUp() {
     setProfileImage(e.target.files[0]);
   };
 
+  if (loading) return <h1>Loading...</h1>;
+
+  if (user) redirect("/restaurant");
+  
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
