@@ -57,7 +57,7 @@ const RestaurantDetailPage = () => {
             toast.success("Sign out successfully");
 
             setTimeout(() => {
-              router.push("/ho");
+              router.push("/");
             }
             
             , 1000);
